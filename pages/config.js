@@ -1,0 +1,1 @@
+<Image src="/icons/04d.svg" width={300} height={300} />

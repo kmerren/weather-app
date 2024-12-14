@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { DEFAULT_LOCATION } from "../src/config";
 
 import { MainCard } from "../components/MainCard";
 import { ContentBox } from "../components/ContentBox";
@@ -13,31 +14,84 @@ import { ErrorScreen } from "../components/ErrorScreen";
 import styles from "../styles/Home.module.css";
 
 export const App = () => {
-  const [cityInput, setCityInput] = useState("Riga");
-  const [triggerFetch, setTriggerFetch] = useState(true);
-  const [weatherData, setWeatherData] = useState();
+  const [weatherData, setWeatherData] = useState(null);
   const [unitSystem, setUnitSystem] = useState("metric");
 
   useEffect(() => {
-    const getData = async () => {
-      const res = await fetch("api/data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cityInput }),
-      });
-      const data = await res.json();
-      setWeatherData({ ...data });
-      setCityInput("");
+    const fetchWeatherData = async () => {
+      try {
+        const response = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${DEFAULT_LOCATION.latitude}&longitude=${DEFAULT_LOCATION.longitude}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,weathercode`
+        );
+        const data = await response.json();
+        
+        // Transform Open Meteo data to match your app's structure
+        const transformedData = {
+          name: DEFAULT_LOCATION.city,
+          sys: { 
+            country: DEFAULT_LOCATION.country,
+            sunrise: null,  // Open-Meteo doesn't provide this
+            sunset: null    // Open-Meteo doesn't provide this
+          },
+          weather: [{
+            description: getWeatherDescription(data.current_weather.weathercode),
+            icon: getWeatherIcon(data.current_weather.weathercode)
+          }],
+          main: {
+            temp: data.current_weather.temperature,
+            humidity: data.hourly.relativehumidity_2m[0]
+          },
+          wind: {
+            speed: data.current_weather.windspeed
+          },
+          dt: new Date().getTime() / 1000,  // Current timestamp in seconds
+          timezone: 0  // Or get timezone offset from the browser
+        };
+        
+        setWeatherData(transformedData);
+      } catch (error) {
+        console.error("Error fetching weather data:", error);
+      }
     };
-    getData();
-  }, [triggerFetch]);
 
-  const changeSystem = () =>
-    unitSystem == "metric"
-      ? setUnitSystem("imperial")
-      : setUnitSystem("metric");
+    // Initial fetch
+    fetchWeatherData();
 
-  return weatherData && !weatherData.message ? (
+    // Set up hourly refresh
+    const refreshInterval = setInterval(fetchWeatherData, 3600000);
+    return () => clearInterval(refreshInterval);
+  }, []);
+
+  const changeSystem = () => setUnitSystem(prev => prev === "metric" ? "imperial" : "metric");
+
+  // Helper functions for weather codes
+  const getWeatherDescription = (code) => {
+    const weatherCodes = {
+      0: "Clear sky",
+      1: "Mainly clear",
+      2: "Partly cloudy",
+      3: "Overcast",
+      45: "Foggy",
+      48: "Depositing rime fog",
+      51: "Light drizzle",
+      // Add more weather codes as needed
+    };
+    return weatherCodes[code] || "Unknown";
+  };
+
+  const getWeatherIcon = (code) => {
+    // Map Open Meteo weather codes to your icon system
+    const iconMap = {
+      0: "01d", // Clear sky
+      1: "02d", // Mainly clear
+      2: "03d", // Partly cloudy
+      3: "04d", // Overcast
+      // Add more mappings as needed
+    };
+    return iconMap[code] || "unknown";
+  };
+
+  return weatherData ? (
     <div className={styles.wrapper}>
       <MainCard
         city={weatherData.name}
@@ -50,32 +104,11 @@ export const App = () => {
       <ContentBox>
         <Header>
           <DateAndTime weatherData={weatherData} unitSystem={unitSystem} />
-          <Search
-            placeHolder="Search a city..."
-            value={cityInput}
-            onFocus={(e) => {
-              e.target.value = "";
-              e.target.placeholder = "";
-            }}
-            onChange={(e) => setCityInput(e.target.value)}
-            onKeyDown={(e) => {
-              e.keyCode === 13 && setTriggerFetch(!triggerFetch);
-              e.target.placeholder = "Search a city...";
-            }}
-          />
         </Header>
         <MetricsBox weatherData={weatherData} unitSystem={unitSystem} />
         <UnitSwitch onClick={changeSystem} unitSystem={unitSystem} />
       </ContentBox>
     </div>
-  ) : weatherData && weatherData.message ? (
-    <ErrorScreen errorMessage="City not found, try again!">
-      <Search
-        onFocus={(e) => (e.target.value = "")}
-        onChange={(e) => setCityInput(e.target.value)}
-        onKeyDown={(e) => e.keyCode === 13 && setTriggerFetch(!triggerFetch)}
-      />
-    </ErrorScreen>
   ) : (
     <LoadingScreen loadingMessage="Loading data..." />
   );
