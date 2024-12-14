@@ -10,10 +10,6 @@ export const MainCard = ({
   unitSystem,
   weatherData,
 }) => {
-  console.log('Weather data:', weatherData);
-  console.log('Weather icon:', weatherData?.weather?.[0]?.icon);
-  console.log('Temperature:', weatherData?.main?.temp);
-
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.location}>
@@ -27,10 +23,14 @@ export const MainCard = ({
         alt="weatherIcon"
       />
       <h1 className={styles.temperature}>
-        {unitSystem == "metric"
-          ? Math.round(weatherData.main.temp)
-          : Math.round(ctoF(weatherData.main.temp))}
-        °{unitSystem == "metric" ? "C" : "F"}
+        {weatherData?.main?.temp && (
+          <>
+            {unitSystem === "metric"
+              ? Math.round(weatherData.main.temp)
+              : Math.round(ctoF(weatherData.main.temp))}
+            °{unitSystem === "metric" ? "C" : "F"}
+          </>
+        )}
       </h1>
       <p>
         Feels like{" "}
