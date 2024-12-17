@@ -2,41 +2,34 @@
 
 Check the current weather on any city on the planet. Switch between metric and imperial units.
 
-![Alt img](https://images.ctfassets.net/zlsyc9paq6sa/3uBrJ07WSM40FpolgjInHY/7d886cb4187b52194bf9b63c183a1d3a/1627637330_x.gif)
+Features
 
-## Features
-
-1. User's ability to search cities
-
-2. Current local time and date
-
-3. Temperatures and humidity
-
-4. Wind speed and direction
-
-5. Sunrise and sunset times
-
-6. Metric vs Imperial system
-
-7. Error handling and loading info
+1. Predefined city configuration (no search required).
+2. Current local time and date display.
+3. Accurate temperature, humidity, and "feels like" values.
+4. Wind speed with direction converted into cardinal points (e.g., SSE, WSW).
+5. Display of sunrise and sunset times.
+6. Seamless switch between metric (°C, m/s) and imperial (°F, mph) systems.
+7. Automatic hourly refresh of weather data.
+8. Error handling and loading state management.
 
 ## Installation
 
-1. `git clone https://github.com/madzadev/weather-app.git`
+1. `git clone https://github.com/kmerren/weather-app.git`
 
 2. `cd weather-app`
 
 3. `npm install`
 
-4. Log-in to [Openweathermap.com](https://openweathermap.org/)
+4. Log in to Open-Meteo API (or relevant API service) to fetch weather data.
 
-5. Create an API key
+5. `cp .env.example .env.local`
 
-6. `cp .env.example .env.local`
+6. Update your API credentials in the .env.local file:
 
-7. Paste API key for `OPENWEATHER_API_KEY`
+   OPENWEATHER_API _KEY=your_api_key_here
 
-8. `npm run dev`
+7. `npm run dev`
 
 ## Contributions
 
