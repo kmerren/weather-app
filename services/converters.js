@@ -35,10 +35,8 @@ export const degToCompass = (deg) => {
 };
 
 export const unixToLocalTime = (unixSeconds, timezone) => {
-  // Create date in UTC, then convert to local time with timezone offset
-  const date = new Date(unixSeconds * 1000);
-  const utcTime = date.getTime() + (date.getTimezoneOffset() * 60000);
-  const localTime = new Date(utcTime + (timezone * 1000));
+  // Create date directly from unix timestamp and timezone
+  const localTime = new Date((unixSeconds + timezone) * 1000);
   
   const hours = localTime.getHours().toString().padStart(2, '0');
   const minutes = localTime.getMinutes().toString().padStart(2, '0');

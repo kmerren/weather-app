@@ -5,7 +5,6 @@ import { MainCard } from "../components/MainCard";
 import { ContentBox } from "../components/ContentBox";
 import { Header } from "../components/Header";
 import { DateAndTime } from "../components/DateAndTime";
-import { Search } from "../components/Search";
 import { MetricsBox } from "../components/MetricsBox";
 import { UnitSwitch } from "../components/UnitSwitch";
 import { LoadingScreen } from "../components/LoadingScreen";
@@ -75,19 +74,49 @@ export const App = () => {
       45: "Foggy",
       48: "Depositing rime fog",
       51: "Light drizzle",
-      // Add more weather codes as needed
+      53: "Moderate drizzle",
+      55: "Dense drizzle",
+      61: "Slight rain",
+      63: "Moderate rain",
+      65: "Heavy rain",
+      71: "Slight snow",
+      73: "Moderate snow",
+      75: "Heavy snow",
+      77: "Snow grains",
+      80: "Slight rain showers",
+      81: "Moderate rain showers",
+      82: "Violent rain showers",
+      85: "Slight snow showers",
+      86: "Heavy snow showers",
+      95: "Thunderstorm"
     };
     return weatherCodes[code] || "Unknown";
   };
 
   const getWeatherIcon = (code) => {
-    // Map Open Meteo weather codes to your icon system
     const iconMap = {
       0: "01d", // Clear sky
       1: "02d", // Mainly clear
       2: "03d", // Partly cloudy
       3: "04d", // Overcast
-      // Add more mappings as needed
+      45: "50d", // Foggy
+      48: "50d", // Depositing rime fog
+      51: "09d", // Light drizzle
+      53: "09d", // Moderate drizzle
+      55: "09d", // Dense drizzle
+      61: "10d", // Slight rain
+      63: "10d", // Moderate rain
+      65: "10d", // Heavy rain
+      71: "13d", // Slight snow
+      73: "13d", // Moderate snow
+      75: "13d", // Heavy snow
+      77: "13d", // Snow grains
+      80: "09d", // Slight rain showers
+      81: "09d", // Moderate rain showers
+      82: "09d", // Violent rain showers
+      85: "13d", // Slight snow showers
+      86: "13d", // Heavy snow showers
+      95: "11d"  // Thunderstorm
     };
     return iconMap[code] || "unknown";
   };
