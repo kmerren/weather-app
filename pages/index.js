@@ -21,7 +21,7 @@ export const App = () => {
     const fetchWeatherData = async () => {
       try {
         const response = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${DEFAULT_LOCATION.latitude}&longitude=${DEFAULT_LOCATION.longitude}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,weathercode`
+          `https://api.open-meteo.com/v1/forecast?latitude=${DEFAULT_LOCATION.latitude}&longitude=${DEFAULT_LOCATION.longitude}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,winddirection_10m,weathercode&daily=sunrise,sunset&timezone=auto`
         );
         const data = await response.json();
         
@@ -30,8 +30,8 @@ export const App = () => {
           name: DEFAULT_LOCATION.city,
           sys: { 
             country: DEFAULT_LOCATION.country,
-            sunrise: null,  // Open-Meteo doesn't provide this
-            sunset: null    // Open-Meteo doesn't provide this
+            sunrise: new Date(data.daily.sunrise[0]).getTime() / 1000,  // Convert to Unix timestamp
+            sunset: new Date(data.daily.sunset[0]).getTime() / 1000     // Convert to Unix timestamp
           },
           weather: [{
             description: getWeatherDescription(data.current_weather.weathercode),
@@ -42,7 +42,8 @@ export const App = () => {
             humidity: data.hourly.relativehumidity_2m[0]
           },
           wind: {
-            speed: data.current_weather.windspeed
+            speed: data.current_weather.windspeed,
+            deg: data.current_weather.winddirection
           },
           dt: new Date().getTime() / 1000,  // Current timestamp in seconds
           timezone: 0  // Or get timezone offset from the browser

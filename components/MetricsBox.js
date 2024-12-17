@@ -9,6 +9,16 @@ import {
 import { MetricsCard } from "./MetricsCard";
 import styles from "./MetricsBox.module.css";
 
+const formatTime = (timestamp) => {
+  if (!timestamp) return "N/A";
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+};
+
 export const MetricsBox = ({ weatherData, unitSystem }) => {
   // Add debug logging
   React.useEffect(() => {
@@ -47,7 +57,7 @@ export const MetricsBox = ({ weatherData, unitSystem }) => {
       <MetricsCard
         title={"Wind direction"}
         iconSrc={"/icons/compass.png"}
-        metric={"Not available"}
+        metric={windDirection}
       />
       <MetricsCard
         title={"Visibility"}
@@ -58,12 +68,12 @@ export const MetricsBox = ({ weatherData, unitSystem }) => {
       <MetricsCard
         title={"Sunrise"}
         iconSrc={"/icons/sunrise.png"}
-        metric={"Not available"}
+        metric={formatTime(weatherData.sys?.sunrise)}
       />
       <MetricsCard
         title={"Sunset"}
         iconSrc={"/icons/sunset.png"}
-        metric={"Not available"}
+        metric={formatTime(weatherData.sys?.sunset)}
       />
     </div>
   );
