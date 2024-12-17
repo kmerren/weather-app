@@ -10,6 +10,12 @@ export const MainCard = ({
   unitSystem,
   weatherData,
 }) => {
+  console.log('MainCard weatherData:', {
+    weatherData,
+    feelsLike: weatherData?.main?.feels_like,
+    main: weatherData?.main
+  });
+
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.location}>
@@ -34,10 +40,16 @@ export const MainCard = ({
       </h1>
       <p>
         Feels like{" "}
-        {unitSystem == "metric"
-          ? Math.round(weatherData.main.feels_like)
-          : Math.round(ctoF(weatherData.main.feels_like))}
-        °{unitSystem == "metric" ? "C" : "F"}
+        {weatherData?.main?.temp ? (
+          <>
+            {unitSystem === "metric"
+              ? Math.round(weatherData.main.temp)
+              : Math.round(ctoF(weatherData.main.temp))}
+            °{unitSystem === "metric" ? "C" : "F"}
+          </>
+        ) : (
+          "N/A"
+        )}
       </p>
     </div>
   );
