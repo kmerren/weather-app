@@ -8,22 +8,40 @@ import {
 export const getWindSpeed = (unitSystem, windInMps) =>
   unitSystem == "metric" ? windInMps : mpsToMph(windInMps);
 
-export const getVisibility = (unitSystem, visibilityInMeters) =>
-  unitSystem == "metric"
-    ? (visibilityInMeters / 1000).toFixed(1)
-    : kmToMiles(visibilityInMeters / 1000);
+export const getVisibility = (unitSystem, visibilityInMeters) => {
+  // If visibility is undefined, use a default value of 10000 meters (10km)
+  const defaultVisibility = 10000;
+  const visibility = visibilityInMeters ?? defaultVisibility;
+  
+  if (unitSystem === "metric") {
+    return (visibility / 1000).toFixed(1);
+  } else {
+    return kmToMiles(visibility / 1000).toFixed(1);
+  }
+};
 
-export const getTime = (unitSystem, currentTime, timezone) =>
-  unitSystem == "metric"
-    ? unixToLocalTime(currentTime, timezone)
-    : timeTo12HourFormat(unixToLocalTime(currentTime, timezone));
+export const getTime = (unitSystem, timestamp, timezone) => {
+  if (!timestamp) return "N/A";
+  
+  try {
+    return unitSystem == "metric"
+      ? unixToLocalTime(timestamp, timezone)
+      : timeTo12HourFormat(unixToLocalTime(timestamp, timezone));
+  } catch (error) {
+    console.error('Error converting time:', error);
+    return "N/A";
+  }
+};
 
-export const getAMPM = (unitSystem, currentTime, timezone) =>
-  unitSystem === "imperial"
-    ? unixToLocalTime(currentTime, timezone).split(":")[0] >= 12
-      ? "PM"
-      : "AM"
-    : "";
+export const getAMPM = (unitSystem, timestamp, timezone) => {
+  if (!timestamp || unitSystem !== "imperial") return "";
+  
+  try {
+    return unixToLocalTime(timestamp, timezone).split(":")[0] >= 12 ? "PM" : "AM";
+  } catch (error) {
+    return "";
+  }
+};
 
 export const getWeekDay = (weatherData) => {
   const weekday = [
